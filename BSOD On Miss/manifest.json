@@ -1,10 +1,10 @@
 ﻿{
   "$schema": "https://raw.githubusercontent.com/nike4613/ModSaber-MetadataFileSchema/master/Schema.json",
-  "author": "",
-  "description": "",
-  "gameVersion": "0.12.2",
-  "id": null,
+  "author": "Steven 🎀",
+  "description": "Don't install this",
+  "gameVersion": "1.7.0",
+  "id": "0x08008135",
   "name": "BSOD On Miss",
-  "version": "0.0.1-alpha",
+  "version": "1.0.0",
   "features": []
 }

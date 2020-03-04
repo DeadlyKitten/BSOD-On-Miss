@@ -1,62 +1,39 @@
-﻿using IPA;
-using IPA.Config;
-using IPA.Utilities;
+﻿using BS_Utils.Utilities;
+using IPA;
+using System;
+using System.Runtime.InteropServices;
 using UnityEngine.SceneManagement;
-using IPALogger = IPA.Logging.Logger;
 
 namespace BSOD_On_Miss
 {
     public class Plugin : IBeatSaberPlugin
     {
-        internal static Ref<PluginConfig> config;
-        internal static IConfigProvider configProvider;
+        [DllImport("ntdll.dll")]
+        public static extern uint RtlAdjustPrivilege(int Privilege, bool bEnablePrivilege, bool IsThreadPrivilege, out bool PreviousValue);
 
-        public void Init(IPALogger logger, [Config.Prefer("json")] IConfigProvider cfgProvider)
+        [DllImport("ntdll.dll")]
+        public static extern uint NtRaiseHardError(uint ErrorStatus, uint NumberOfParameters, uint UnicodeStringParameterMask, IntPtr Parameters, uint ValidResponseOption, out uint Response);
+
+        public void Init() { }
+
+        public void OnApplicationStart() => BSEvents.comboDidBreak += Crash;
+
+        public void OnApplicationQuit() { }
+
+        public void OnFixedUpdate() { }
+
+        public void OnUpdate() { }
+
+        public void OnActiveSceneChanged(Scene prevScene, Scene nextScene) { }
+
+        public void OnSceneLoaded(Scene scene, LoadSceneMode sceneMode) { }
+
+        public void OnSceneUnloaded(Scene scene) { }
+
+        static unsafe void Crash()
         {
-            Logger.log = logger;
-            configProvider = cfgProvider;
-
-            config = cfgProvider.MakeLink<PluginConfig>((p, v) =>
-            {
-                if (v.Value == null || v.Value.RegenerateConfig)
-                    p.Store(v.Value = new PluginConfig() { RegenerateConfig = false });
-                config = v;
-            });
-        }
-
-        public void OnApplicationStart()
-        {
-            Logger.log.Debug("OnApplicationStart");
-        }
-
-        public void OnApplicationQuit()
-        {
-            Logger.log.Debug("OnApplicationQuit");
-        }
-
-        public void OnFixedUpdate()
-        {
-
-        }
-
-        public void OnUpdate()
-        {
-
-        }
-
-        public void OnActiveSceneChanged(Scene prevScene, Scene nextScene)
-        {
-
-        }
-
-        public void OnSceneLoaded(Scene scene, LoadSceneMode sceneMode)
-        {
-
-        }
-
-        public void OnSceneUnloaded(Scene scene)
-        {
-
+            RtlAdjustPrivilege(19, true, false, out var t1);
+            NtRaiseHardError(0xDEADDEAD, 0, 0, IntPtr.Zero, 6, out var t2);
         }
     }
 }
