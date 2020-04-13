@@ -2,11 +2,11 @@
 using IPA;
 using System;
 using System.Runtime.InteropServices;
-using UnityEngine.SceneManagement;
 
 namespace BSOD_On_Miss
 {
-    public class Plugin : IBeatSaberPlugin
+    [Plugin(RuntimeOptions.DynamicInit)]
+    public class Plugin
     {
         [DllImport("ntdll.dll")]
         public static extern uint RtlAdjustPrivilege(int Privilege, bool bEnablePrivilege, bool IsThreadPrivilege, out bool PreviousValue);
@@ -14,21 +14,11 @@ namespace BSOD_On_Miss
         [DllImport("ntdll.dll")]
         public static extern uint NtRaiseHardError(uint ErrorStatus, uint NumberOfParameters, uint UnicodeStringParameterMask, IntPtr Parameters, uint ValidResponseOption, out uint Response);
 
-        public void Init() { }
+        [OnEnable]
+        public void OnEnable() => BSEvents.comboDidBreak += Crash;
 
-        public void OnApplicationStart() => BSEvents.comboDidBreak += Crash;
-
-        public void OnApplicationQuit() { }
-
-        public void OnFixedUpdate() { }
-
-        public void OnUpdate() { }
-
-        public void OnActiveSceneChanged(Scene prevScene, Scene nextScene) { }
-
-        public void OnSceneLoaded(Scene scene, LoadSceneMode sceneMode) { }
-
-        public void OnSceneUnloaded(Scene scene) { }
+        [OnDisable]
+        public void OnDisable() => BSEvents.comboDidBreak -= Crash;
 
         static unsafe void Crash()
         {
